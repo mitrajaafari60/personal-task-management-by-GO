@@ -19,10 +19,13 @@ func ReminderScheduller() {
 		var Tasks []entities.Task
 		database.Instance.Find(&Tasks)
 		for _, task := range Tasks {
-			diff := time.Now().Sub(task.UpdatedAt).Seconds()
-			if diff > float64(task.Reminder) {
-				RemindList[int(task.ID)] = task
-				RemindByEmail(task)
+			diffStart := time.Now().Sub(task.StartTime).Seconds()
+			if diffStart > 0 {
+				diff := time.Now().Sub(task.UpdatedAt).Hours() //Seconds() //for test chang to seconds
+				if diff > float64(task.Reminder) {
+					RemindList[int(task.ID)] = task
+					RemindByEmail(task)
+				}
 			}
 		}
 		time.Sleep(20 * time.Second)

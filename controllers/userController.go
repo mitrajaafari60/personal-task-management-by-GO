@@ -5,6 +5,7 @@ import (
 	"PersonalTaskManagement/entities"
 	"encoding/json"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -14,6 +15,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var User entities.User
 	json.NewDecoder(r.Body).Decode(&User)
+	if !isEmailValid(User.Email) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Email is invalid!")
+		return
+	}
 	result := database.Instance.Create(&User)
 	if result.Error != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -64,4 +70,8 @@ func checkIfUserExists(UserId string) bool {
 		return false
 	}
 	return true
+}
+func isEmailValid(e string) bool {
+	emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+	return emailRegex.MatchString(e)
 }
