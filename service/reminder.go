@@ -7,10 +7,13 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"net/smtp"
 	"strconv"
 	"time"
 )
 
+var From string
+var Password string
 var RemindList = make(map[int]entities.Task)
 
 func ReminderScheduller() {
@@ -21,10 +24,12 @@ func ReminderScheduller() {
 		for _, task := range Tasks {
 			diffStart := time.Now().Sub(task.StartTime).Seconds()
 			if diffStart > 0 {
-				diff := time.Now().Sub(task.UpdatedAt).Hours() //Seconds() //for test chang to seconds
+				diff := time.Now().Sub(task.UpdatedAt).Hours()
 				if diff > float64(task.Reminder) {
 					RemindList[int(task.ID)] = task
-					RemindByEmail(task)
+					if len(From) > 0 {
+						RemindByEmail(task)
+					}
 				}
 			}
 		}
@@ -68,5 +73,49 @@ func UpdateRemind(TaskId string) error {
 }
 
 func RemindByEmail(task entities.Task) {
+	var User entities.User
+	database.Instance.First(&User, task.UserID)
 
+	EmailShouldSend := false
+	EmailSent := entities.EmailsReminder{}
+	database.Instance.Where("task_id = ?", task.ID).Find(&EmailSent)
+	if EmailSent.ID == 0 {
+		EmailSent.TaskId = int(task.ID)
+		EmailSent.Email = User.Email
+		database.Instance.Create(&EmailSent)
+		EmailShouldSend = true
+	}
+
+	diff := time.Now().Sub(task.UpdatedAt).Hours()
+	if diff > float64(task.Reminder) {
+		EmailShouldSend = true
+	}
+
+	if EmailShouldSend {
+		SendEmail(User.Email, task)
+		database.Instance.Save(&EmailSent)
+	}
+}
+
+func SendEmail(e string, t entities.Task) {
+
+	// Receiver email address.
+	to := []string{e}
+	// smtp server configuration.
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587"
+
+	// Message.
+	message := []byte("task reminder:" + t.Description)
+
+	// Authentication.
+	auth := smtp.PlainAuth("", From, Password, smtpHost)
+
+	// Sending email.
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, From, to, message)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("Email Sent Successfully!")
 }

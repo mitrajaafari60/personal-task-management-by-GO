@@ -17,6 +17,8 @@ import (
 type Config struct {
 	Port             string `mapstructure:"port"`
 	ConnectionString string `mapstructure:"connection_string"`
+	Email            string `mapstructure:"email"`
+	Password         string `mapstructure:"password"`
 }
 
 var AppConfig *Config
@@ -35,6 +37,8 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	// run Reminder goroutin to Remind Users
+	service.From = AppConfig.Email
+	service.Password = AppConfig.Password
 	go service.ReminderScheduller()
 	// Register Routes
 	RegisterRoutes(router)

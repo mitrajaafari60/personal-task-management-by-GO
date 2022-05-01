@@ -23,5 +23,6 @@ func Connect(connectionString string) {
 func Migrate() {
 	Instance.AutoMigrate(&entities.User{})
 	Instance.AutoMigrate(&entities.Task{})
+	Instance.AutoMigrate(&entities.EmailsReminder{})
 	log.Println("Database Migration Completed...")
 }
