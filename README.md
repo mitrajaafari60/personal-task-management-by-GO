@@ -1,30 +1,30 @@
 # this is a sample project based on Go for Task Mangment APIs
 
 
-## Introduction
+### Introduction
 
-This Application perform the requests as a personal task management app bata:
-Minimal requirements:
-• Create user
-  ◦ Minimal set of properties:
-      ▪ email----------> Email validation and being unique in users table is checked
-      ▪ first name
-      ▪ last name
-• Delete user
-• Get user
-• Get users
-• Create a task
-    ◦ task has to be assigned to a user   ---------> user Validation is Checked
-    ◦ task can occupy some certain amount of time-->  user Validation and start/End time of the task checked
-    ◦ task can’t overlap with other tasks ----------> start/end time of task of the user checked with his/her other tasks in the Database not to be overlapped
-    ◦ reminder period-------------------------------> default is set to 24Hour , but it can be defined in task creation
-• Delete task
-• Get task
-• Get tasks
-  ◦ get list of the task
-• Reminder notification
-  ◦ by email  -------> in service/reminder.go a goroutin checks the task and their timing if notification is needed it fills in a slice of map which is Get by web Site,and Emails and messages by TaskId is saved on Database to check timing and perevent multiple Email sending.
-  ◦ on-site  --------> as described reminderList is saved in list by goroutin and each time the method(GET /api/reminders) called it respond the array of tasks which should be done , and also (POST /api/reminders) method is developed, this method updates the task time UpdatedAt for the spesific taskId ,So the notification of the task on site can ignored  and not to be annoy the user each time  untill next remind period.
+* This Application perform the requests as a personal task management app bata:
+* Minimal requirements:
+  * • Create user
+    * ◦ Minimal set of properties:
+      * ▪ email----------> Email validation and being unique in users table is checked
+      * ▪ first name
+      * ▪ last name
+  * • Delete user
+  * • Get user
+  * • Get users
+  * • Create a task
+    * ◦ task has to be assigned to a user   ---------> user Validation is Checked
+    * ◦ task can occupy some certain amount of time-->  user Validation and start/End time of the task checked
+    * ◦ task can’t overlap with other tasks ----------> start/end time of task of the user checked with his/her other tasks in the Database not to be overlapped
+    * ◦ reminder period-------------------------------> default is set to 24Hour , but it can be defined in task creation
+  * • Delete task
+  * • Get task
+  * • Get tasks
+    * ◦ get list of the task
+  * • Reminder notification
+    * ◦ by email  -------> in service/reminder.go a goroutin checks the task and their timing if notification is needed it fills in a slice of map which is Get by web Site,and Emails and messages by TaskId is saved on Database to check timing and perevent multiple Email sending.
+    * ◦ on-site  --------> as described reminderList is saved in list by goroutin and each time the method(GET /api/reminders) called it respond the array of tasks which should be done , and also (POST /api/reminders) method is developed, this method updates the task time UpdatedAt for the spesific taskId ,So the notification of the task on site can ignored  and not to be annoy the user each time  untill next remind period.
 * ### *Description:*
     * This project  backend-server is based on Rest webservice with Postgres Database
 ## Getting Started
